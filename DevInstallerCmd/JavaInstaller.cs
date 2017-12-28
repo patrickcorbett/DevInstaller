@@ -10,34 +10,41 @@ using System.Runtime.InteropServices;
 
 namespace DevInstallerCmd
 {
-    class Program
+    class JavaInstaller
     {
-        private static String javaInstallDir = @"develop\software\java";
-        public String currentDir = "";
-        public String installDir = "";
+        private static readonly IntPtr HWND_BROADCAST = new IntPtr(0xffff);
+        private const int WM_SETTINGCHANGE = 0x1a;
+        private const int SMTO_ABORTIFHUNG = 0x0002;
+        
+        private String javaInstallPath;
 
-        static void Main(string[] args)
+        private DevInstaller devInstaller;
+
+        public JavaInstaller(DevInstaller pInstaller)
         {
-            // create instance of the program
-            Program p = new Program();
+            this.devInstaller = pInstaller;
+            // set the java install path
+            this.javaInstallPath = devInstaller.InstallDirectory + @"\software\java";
+        }
 
-            // set the install directory for java
-            p.currentDir = System.AppDomain.CurrentDomain.BaseDirectory;
-            p.installDir = @"C:\" + javaInstallDir;
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, string lParam, uint fuFlags, uint uTimeout, IntPtr lpdwResult);
 
+        public void install(string[] args)
+        {
             // lookup the java version
-            String javaVersion = p.findJavaVersion();
+            String javaVersion = findJavaVersion();
             if (javaVersion == null)
             {
                 // java version was not found find the java executable
-                String javaExe = p.findJavaJDKs();
+                String javaExe = findJavaJDKs();
                 
                 // install java
                 if (javaExe != null)
                 {
-                    if (p.installJavaJDK(javaExe)) {
+                    if (installJavaJDK(javaExe)) {
                         // java was installed
-                        p.setJavaHome();
+                        setJavaHome();
                     }
                 } else
                 {
@@ -57,20 +64,17 @@ namespace DevInstallerCmd
                 }
                 else
                 {
-                    p.setJavaHome();
+                    setJavaHome();
                 }
             }
-
-            Console.WriteLine("Press any key to continue . . .");
-            Console.ReadLine();
         }
 
         private String findJavaJDKs()
         {
             // search in the current folder for a JDK installation file
-            Console.WriteLine("The execution path is : " + currentDir);
+            Console.WriteLine("The execution path is : " + devInstaller.BaseDirectory);
 
-            String[] jdks = Directory.GetFiles(@currentDir, "jdk*");
+            String[] jdks = Directory.GetFiles(devInstaller.BaseDirectory, "jdk*");
 
             String javaExe = null;
             foreach (String jdk in jdks) {
@@ -90,7 +94,7 @@ namespace DevInstallerCmd
             startInfo.UseShellExecute = false;
             startInfo.FileName = pJavaExe;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = "/s INSTALLDIR=" + installDir + @"\jdk /INSTALLDIRPUBJRE=" + installDir + @"\jre";
+            startInfo.Arguments = "/s INSTALLDIR=" + javaInstallPath + @"\jdk /INSTALLDIRPUBJRE=" + javaInstallPath + @"\jre";
             
             try
             {
@@ -113,59 +117,14 @@ namespace DevInstallerCmd
             }
         }
 
-        private static readonly IntPtr HWND_BROADCAST = new IntPtr(0xffff);
-        private const int WM_SETTINGCHANGE = 0x1a;
-        private const int SMTO_ABORTIFHUNG = 0x0002;
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, string lParam, uint fuFlags, uint uTimeout, IntPtr lpdwResult);
-
         private void setJavaHome() {
             
             String javaVersion = findJavaVersion();
 
             Console.WriteLine("The version is : " + javaVersion);
 
-            // set the JAVA_HOME environment variable
-            Environment.SetEnvironmentVariable("JAVA_HOME", installDir + @"\jdk", EnvironmentVariableTarget.Machine);
-
-            // get the JAVA_HOME environment variable
-            String javaHome = Environment.GetEnvironmentVariable("JAVA_HOME", EnvironmentVariableTarget.Machine);
-
-            if (javaHome != null)
-            {
-                Console.WriteLine("JAVA_HOME is : " + javaHome);
-
-                // update the path environment variable via registry
-                string keyName = @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment";
-                //get non-expanded PATH environment variable            
-                string oldPath = (string) Registry.LocalMachine.CreateSubKey(keyName).GetValue("Path", "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-
-                Console.WriteLine("PATH set to : " + oldPath);
-
-                //set the path as an an expandable string
-                Registry.LocalMachine.CreateSubKey(keyName).SetValue("Path", "%JAVA_HOME%\\bin;" + oldPath, RegistryValueKind.ExpandString);
-                
-                string newPath = (string)Registry.LocalMachine.CreateSubKey(keyName).GetValue("Path", "", RegistryValueOptions.DoNotExpandEnvironmentNames);
-
-                SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, IntPtr.Zero, "Environment", SMTO_ABORTIFHUNG, 100, IntPtr.Zero);
-
-                /*
-                String path = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
-                //Environment.SetEnvironmentVariable("path", "%JAVA_HOME%;" + path, EnvironmentVariableTarget.Machine);
-
-                path = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
-                //Console.WriteLine("PATH set to : " + path);
-
-                //Environment.SetEnvironmentVariable("path", path.Replace("%JAVA_HOME%", "%JAVA_HOME%\\bin"), EnvironmentVariableTarget.Machine);
-
-                path = Environment.GetEnvironmentVariable("path", EnvironmentVariableTarget.Machine);
-                   */
-
-                Console.WriteLine("Updated PATH is : " + newPath);
-            }
-            else
-            {
+            // set the JAVA_HOME variable and set it on the System PATH
+            if (!EnvironmentVariableUtil.setVariable("JAVA_HOME", javaInstallPath + @"\jdk", true, @"%JAVA_HOME%\bin")) {
                 Console.WriteLine("JAVA_HOME was not set");
             }
         }
