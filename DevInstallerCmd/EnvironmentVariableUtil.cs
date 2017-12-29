@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace DevInstallerCmd
 {
-    class EnvironmentVariableUtil
+    internal class EnvironmentVariableUtil
     {
         private static readonly IntPtr HWND_BROADCAST = new IntPtr(0xffff);
         private const int WM_SETTINGCHANGE = 0x1a;

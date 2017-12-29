@@ -46,9 +46,13 @@ namespace DevInstallerCmd
             DevInstaller devInstaller = new DevInstaller(System.AppDomain.CurrentDomain.BaseDirectory, installDirectory);
             
             // install java
-            JavaInstaller javaInstaller = new JavaInstaller(devInstaller);
-            javaInstaller.install(args);
-            
+            //JavaInstaller javaInstaller = new JavaInstaller(devInstaller);
+            //javaInstaller.install(args);
+
+            // install Maven
+            MavenInstaller mavenInstaller = new MavenInstaller(devInstaller);
+            mavenInstaller.install();
+
             // complete
             Console.WriteLine("Press any key to continue . . .");
             Console.ReadLine();
