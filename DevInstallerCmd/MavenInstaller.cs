@@ -14,12 +14,13 @@ namespace DevInstallerCmd
             this.devInstaller = pInstaller;
 
             // find the zipfile
-            this.extractPath = devInstaller.InstallDirectory + @"\software";
+            this.extractPath = devInstaller.InstallDirectory + @"\software\maven";
         }
 
+        // https://maven.apache.org/install.html
         public void install()
         {
-            FileInfo zipInfo = findZIPs();
+            FileInfo zipInfo = FileSelector.selectFile(devInstaller.BaseDirectory, "zip");
             if (zipInfo != null)
             {
                 // unzip the archive
@@ -27,56 +28,35 @@ namespace DevInstallerCmd
                 Console.WriteLine("Zip :"+ zipInfo.Name + " was extracted");
 
                 // rename the created folder
-                string folder = extractPath + "\\" + zipInfo.Name.Replace("-bin" + zipInfo.Extension, "");
-
-
-                Directory.Move(folder, extractPath + "\\maven");
+                // string folder = extractPath + "\\" + zipInfo.Name.Replace("-bin" + zipInfo.Extension, "");
+                // Directory.Move(folder, extractPath + "\\maven");
             }
             else
             {
                 Console.WriteLine("Zip could not be extracted");
             }
+
+
+            // select the maven version
+            FileInfo mavenInfo = FileSelector.selectFile(extractPath);
+            if (mavenInfo != null)
+            {
+                // set maven home
+                setMavenHome(mavenInfo);
+            }
+            else
+            {
+                Console.WriteLine("MAVEN_HOME was not set");
+            }
         }
 
-        private FileInfo findZIPs()
+        private void setMavenHome(FileInfo pMavenInfo)
         {
-            // search in the current folder for a JDK installation file
-            Console.WriteLine("The execution path is : " + devInstaller.BaseDirectory);
-
-            String[] zips = Directory.GetFiles(devInstaller.BaseDirectory, "*.zip");
-
-            int index = 0;
-            Console.WriteLine("Please select the correct zip file");
-            foreach (String zip in zips)
+            // set the JAVA_HOME variable and set it on the System PATH
+            if (!EnvironmentVariableUtil.setVariable("MAVEN_HOME", extractPath + @"\maven\" + pMavenInfo.Name, true, @"%MAVEN_HOME%\bin"))
             {
-                Console.WriteLine("["+ (index++) +"]" + zip);
+                Console.WriteLine("MAVEN_HOME was not set");
             }
-
-            FileInfo zipFileInfo = null;
-            while (zipFileInfo == null)
-            {
-
-                String indexString = Console.ReadLine();
-                int parseResult;
-                if (int.TryParse(indexString, out parseResult)) {
-
-                    try
-                    {
-                        // get the string value input
-                        string zipFile = (string) zips.GetValue(parseResult);
-
-                        // get the file info
-                        zipFileInfo = new FileInfo(zipFile);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Could not detect a valid selection");
-                        zipFileInfo = null;
-                    }
-                }
-            }
-            
-            return zipFileInfo;
         }
     }
 }

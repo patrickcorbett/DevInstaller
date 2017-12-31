@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSelector.cs" />
     <Compile Include="JavaInstaller.cs" />
     <Compile Include="EnvironmentVariableUtil.cs" />
     <Compile Include="DevInstaller.cs" />
