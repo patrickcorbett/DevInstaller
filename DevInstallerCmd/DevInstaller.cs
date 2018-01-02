@@ -11,11 +11,7 @@ using System.Runtime.InteropServices;
 namespace DevInstallerCmd
 {
     class DevInstaller
-    {
-        private static readonly IntPtr HWND_BROADCAST = new IntPtr(0xffff);
-        private const int WM_SETTINGCHANGE = 0x1a;
-        private const int SMTO_ABORTIFHUNG = 0x0002;
-                
+    {               
         // the execution directory
         private string baseDirectory; 
         public string BaseDirectory { get => baseDirectory; set => baseDirectory = value; }
@@ -29,9 +25,6 @@ namespace DevInstallerCmd
             this.BaseDirectory = baseDirectory;
             this.InstallDirectory = installDirectory;
         }
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, string lParam, uint fuFlags, uint uTimeout, IntPtr lpdwResult);
 
         static void Main(string[] args)
         {

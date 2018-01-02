@@ -10,12 +10,12 @@ namespace DevInstallerCmd
     internal class FileSelector
     {
 
-        public static FileInfo selectFile(string pSearchPath)
+        public static FileInfo selectFile(string pSearchPath, string pParam)
         {
-            return selectFile(pSearchPath, null);
+            return selectFile(pSearchPath, pParam, null);
         }
 
-        public static FileInfo selectFile(string pSearchPath, string pExtension)
+        public static FileInfo selectFile(string pSearchPath, string pParam, string pExtension)
         {
             // look up the files in the search folder
             String[] files = null;
@@ -31,7 +31,7 @@ namespace DevInstallerCmd
             }
 
             int index = 0;
-            Console.WriteLine("Please select the correct file");
+            Console.WriteLine("Please select the correct file (" + pParam + ")");
             foreach (String file in files)
             {
                 Console.WriteLine("[" + (index++) + "] - " + file);

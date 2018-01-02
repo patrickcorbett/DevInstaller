@@ -19,9 +19,9 @@ namespace DevInstallerCmd
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, string lParam, uint fuFlags, uint uTimeout, IntPtr lpdwResult);
 
-        public static Boolean setVariable(String pKey, String pValue, Boolean pUpdatePath)
+        public static Boolean setVariable(String pKey, String pValue)
         {
-            return setVariable(pKey, pValue, pUpdatePath, null);
+            return setVariable(pKey, pValue, false, null);
         }
 
         public static Boolean setVariable(String pKey, String pValue, Boolean pUpdatePath, String pPathValue) {

@@ -68,6 +68,7 @@
     <Compile Include="JavaInstaller.cs" />
     <Compile Include="EnvironmentVariableUtil.cs" />
     <Compile Include="DevInstaller.cs" />
+    <Compile Include="TomcatInstaller.cs" />
     <Compile Include="MavenInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

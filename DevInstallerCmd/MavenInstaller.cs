@@ -20,7 +20,7 @@ namespace DevInstallerCmd
         // https://maven.apache.org/install.html
         public void install()
         {
-            FileInfo zipInfo = FileSelector.selectFile(devInstaller.BaseDirectory, "zip");
+            FileInfo zipInfo = FileSelector.selectFile(devInstaller.BaseDirectory, "Maven zip to install", "zip");
             if (zipInfo != null)
             {
                 // unzip the archive
@@ -38,7 +38,7 @@ namespace DevInstallerCmd
 
 
             // select the maven version
-            FileInfo mavenInfo = FileSelector.selectFile(extractPath);
+            FileInfo mavenInfo = FileSelector.selectFile(extractPath, "MAVEN_HOME", "zip");
             if (mavenInfo != null)
             {
                 // set maven home
