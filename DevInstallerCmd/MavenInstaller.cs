@@ -38,7 +38,7 @@ namespace DevInstallerCmd
 
 
             // select the maven version
-            FileInfo mavenInfo = FileSelector.selectFile(extractPath, "MAVEN_HOME", "zip");
+            FileInfo mavenInfo = FileSelector.selectFile(extractPath, "MAVEN_HOME");
             if (mavenInfo != null)
             {
                 // set maven home

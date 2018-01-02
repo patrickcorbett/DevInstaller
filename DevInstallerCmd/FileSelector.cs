@@ -26,8 +26,8 @@ namespace DevInstallerCmd
             }
             else
             {
-                Console.WriteLine("The execution path is : " + pSearchPath + ", listing all files");
-                files = Directory.GetFiles(pSearchPath);
+                Console.WriteLine("The execution path is : " + pSearchPath + ", listing all directories");
+                files = Directory.GetDirectories(pSearchPath);
             }
 
             int index = 0;

@@ -28,10 +28,11 @@ namespace DevInstallerCmd
                 Console.WriteLine("Zip :"+ zipInfo.Name + " was extracted");
 
                 // rename the created folder
-                string folder = extractPath + "\\" + zipInfo.Name;
-                string newFolderName = extractPath + "\\" + zipInfo.Name.Replace("DiffMerge_", "").Replace("_stable_x64", "");
+                string folder = zipInfo.Name.Replace(zipInfo.Extension, "");
+                string folderPath = extractPath + "\\" + folder;
+                string newFolderName = extractPath + "\\" + folder.Replace("DiffMerge_", "").Replace("_stable_x64", "");
 
-                Directory.Move(folder, newFolderName);
+                Directory.Move(folderPath, newFolderName);
             }
             else
             {

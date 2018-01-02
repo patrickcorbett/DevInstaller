@@ -33,7 +33,7 @@ namespace DevInstallerCmd
             }
 
             // select the tomcat version (CATALINA_HOME)
-            FileInfo tomcatInfo = FileSelector.selectFile(extractPath, "CATALINA_HOME", "zip");
+            FileInfo tomcatInfo = FileSelector.selectFile(extractPath, "CATALINA_HOME");
             if (tomcatInfo != null)
             {
                 // set catalina_home
@@ -41,7 +41,7 @@ namespace DevInstallerCmd
             }
 
             // select the active tomcat version (CATALINA_BASE)
-            FileInfo activeTomcatInfo = FileSelector.selectFile(extractPath, "CATALINA_BASE", "zip");
+            FileInfo activeTomcatInfo = FileSelector.selectFile(extractPath, "CATALINA_BASE");
             if (tomcatInfo != null)
             {
                  // set catalina_base
